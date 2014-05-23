@@ -3,15 +3,15 @@
 version = '0.1.0'
 
 Gem::Specification.new do |s|
-  s.name        = 'semi-semantic'
+  s.name        = 'semi_semantic'
   s.version     = version
   s.platform    = Gem::Platform::RUBY
   s.summary     = 'Semi Semantic'
   s.description = "Semi Semantic\n#{`git rev-parse HEAD`[0, 6]}"
-  s.author      = 'Karl Isenberg'
-  s.homepage    = 'https://github.com/karlkfi/semi-semantic'
+  s.author      = 'Pivotal'
+  s.homepage    = 'https://github.com/pivotal-cf-experimental/semi_semantic'
   s.license     = 'Apache 2.0'
-  s.email       = 'karlkfi@yahoo.com'
+  s.email       = 'support@cloudfoundry.com'
   s.required_ruby_version = Gem::Requirement.new('>= 1.9.3')
 
   s.files        = `git ls-files -- bin/* lib/*`.split("\n") + %w(README)
