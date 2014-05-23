@@ -5,20 +5,20 @@ module SemiSemantic
     PRE_RELEASE_PREFIX = '-'
     POST_RELEASE_PREFIX = '+'
 
-    attr_reader :release, :pre_release, :post_release
+    attr_reader :release, :pre_release, :post_release, :segments
 
     def self.parse(version_string)
       matches = /^(?<release>[^-+]+)(\-(?<pre_release>[^-+]+))?(\+(?<post_release>[^-+]+))?$/.match(version_string)
       raise ArgumentError.new "Invalid Version Format: #{version_string}" if matches.nil?
 
-      release = VersionCluster.parse matches[:release]
+      release = VersionSegment.parse matches[:release]
       pre_release = nil
       if matches[:pre_release]
-        pre_release = VersionCluster.parse matches[:pre_release]
+        pre_release = VersionSegment.parse matches[:pre_release]
       end
       post_release = nil
       if matches[:post_release]
-        post_release = VersionCluster.parse matches[:post_release]
+        post_release = VersionSegment.parse matches[:post_release]
       end
       self.new(release, pre_release, post_release)
     end
@@ -28,6 +28,10 @@ module SemiSemantic
       @release = release
       @pre_release = pre_release
       @post_release = post_release
+
+      @segments = [release]
+      @segments << pre_release unless pre_release.nil?
+      @segments << post_release unless post_release.nil?
     end
 
     def <=>(other)

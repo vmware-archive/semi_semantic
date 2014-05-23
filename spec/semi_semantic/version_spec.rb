@@ -1,25 +1,25 @@
 require 'spec_helper'
 require 'semi_semantic/version'
-require 'semi_semantic/version_cluster'
+require 'semi_semantic/version_segment'
 
 module SemiSemantic
   describe Version do
 
     describe 'release' do
       it 'returns the first VersionCluster' do
-        expect(described_class.parse('1.0').release).to eq VersionCluster.parse '1.0'
-        expect(described_class.parse('1.0-alpha').release).to eq VersionCluster.parse '1.0'
-        expect(described_class.parse('1.0+dev').release).to eq VersionCluster.parse '1.0'
-        expect(described_class.parse('1.0-alpha+dev').release).to eq VersionCluster.parse '1.0'
+        expect(described_class.parse('1.0').release).to eq VersionSegment.parse '1.0'
+        expect(described_class.parse('1.0-alpha').release).to eq VersionSegment.parse '1.0'
+        expect(described_class.parse('1.0+dev').release).to eq VersionSegment.parse '1.0'
+        expect(described_class.parse('1.0-alpha+dev').release).to eq VersionSegment.parse '1.0'
       end
     end
 
     describe 'pre_release' do
       it 'returns the VersionCluster following the "-"' do
         expect(described_class.parse('1.0').pre_release).to be_nil
-        expect(described_class.parse('1.0-alpha').pre_release).to eq VersionCluster.parse 'alpha'
+        expect(described_class.parse('1.0-alpha').pre_release).to eq VersionSegment.parse 'alpha'
         expect(described_class.parse('1.0+dev').pre_release).to be_nil
-        expect(described_class.parse('1.0-alpha+dev').pre_release).to eq VersionCluster.parse 'alpha'
+        expect(described_class.parse('1.0-alpha+dev').pre_release).to eq VersionSegment.parse 'alpha'
       end
     end
 
@@ -27,20 +27,42 @@ module SemiSemantic
       it 'returns the VersionCluster following the "+"' do
         expect(described_class.parse('1.0').post_release).to be_nil
         expect(described_class.parse('1.0-alpha').post_release).to be_nil
-        expect(described_class.parse('1.0+dev').post_release).to eq VersionCluster.parse 'dev'
-        expect(described_class.parse('1.0-alpha+dev').post_release).to eq VersionCluster.parse 'dev'
+        expect(described_class.parse('1.0+dev').post_release).to eq VersionSegment.parse 'dev'
+        expect(described_class.parse('1.0-alpha+dev').post_release).to eq VersionSegment.parse 'dev'
       end
     end
 
     describe 'parse' do
-      #TODO
+      it 'parses up to 3 segments' do
+        segment_a = VersionSegment.parse '1.0.a'
+        segment_b = VersionSegment.parse '1.0.b'
+        segment_c = VersionSegment.parse '1.0.c'
+        expect(described_class.parse('1.0.a-1.0.b+1.0.c').segments).to eq [segment_a,segment_b,segment_c]
+        expect(described_class.parse('1.0.a-1.0.b').segments).to eq [segment_a,segment_b]
+        expect(described_class.parse('1.0.a+1.0.c').segments).to eq [segment_a,segment_c]
+        expect(described_class.parse('1.0.a').segments).to eq [segment_a]
+      end
+
+      it 'raises an ArgumentError if a segment fails to parse' do
+        expect{described_class.parse("\u{6666}")}.to raise_error(ArgumentError)
+      end
+
+      it 'raises an ArgumentError if duplicate reserved conjunctions' do
+        expect{described_class.parse("1+1+1")}.to raise_error(ArgumentError)
+        expect{described_class.parse("1-1-1")}.to raise_error(ArgumentError)
+        expect{described_class.parse("1-1+1-1")}.to raise_error(ArgumentError)
+      end
+
+      it 'raises an ArgumentError for the empty string' do
+        expect{described_class.parse('')}.to raise_error(ArgumentError)
+      end
     end
 
     describe 'to string' do
       it 'joins the version clusters with separators' do
-        release = VersionCluster.parse '1.1.1.1'
-        pre_release = VersionCluster.parse '2.2.2.2'
-        post_release = VersionCluster.parse '3.3.3.3'
+        release = VersionSegment.parse '1.1.1.1'
+        pre_release = VersionSegment.parse '2.2.2.2'
+        post_release = VersionSegment.parse '3.3.3.3'
 
         expect(described_class.new(release).to_s).to eq '1.1.1.1'
         expect(described_class.new(release, pre_release).to_s).to eq '1.1.1.1-2.2.2.2'

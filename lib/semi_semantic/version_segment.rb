@@ -1,5 +1,5 @@
 module SemiSemantic
-  class VersionCluster
+  class VersionSegment
     include Comparable
 
     #TODO: immutable?

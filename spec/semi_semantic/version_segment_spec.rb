@@ -1,8 +1,8 @@
 require 'spec_helper'
-require 'semi_semantic/version_cluster'
+require 'semi_semantic/version_segment'
 
 module SemiSemantic
-  describe VersionCluster do
+  describe VersionSegment do
 
     describe 'parse' do
       it 'handles one or more non-negative numerical components' do
