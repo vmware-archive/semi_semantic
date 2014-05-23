@@ -42,18 +42,36 @@ module SemiSemantic
         expect(described_class.parse('1.0.a').segments).to eq [segment_a]
       end
 
-      it 'raises an ArgumentError if a segment fails to parse' do
-        expect{described_class.parse("\u{6666}")}.to raise_error(ArgumentError)
+      it 'raises a ParseError if a segment fails to parse' do
+        version_segment = class_double('SemiSemantic::VersionSegment').as_stubbed_const
+        allow(version_segment).to receive(:parse).and_raise(ParseError)
+
+        expect{described_class.parse('1.0')}.to raise_error(ParseError)
       end
 
-      it 'raises an ArgumentError if duplicate reserved conjunctions' do
-        expect{described_class.parse("1+1+1")}.to raise_error(ArgumentError)
-        expect{described_class.parse("1-1-1")}.to raise_error(ArgumentError)
-        expect{described_class.parse("1-1+1-1")}.to raise_error(ArgumentError)
+      it 'supports hyphenation in pre/post-release segments' do
+        v = described_class.parse("1-1-1")
+        expect(v.release).to eq VersionSegment.parse '1'
+        expect(v.pre_release).to eq VersionSegment.parse '1-1'
+        expect(v.post_release).to be_nil
+
+        v = described_class.parse("1+1-1")
+        expect(v.release).to eq VersionSegment.parse '1'
+        expect(v.pre_release).to be_nil
+        expect(v.post_release).to eq VersionSegment.parse '1-1'
+
+        v = described_class.parse("1-1-1+1-1")
+        expect(v.release).to eq VersionSegment.parse '1'
+        expect(v.pre_release).to eq VersionSegment.parse '1-1'
+        expect(v.post_release).to eq VersionSegment.parse '1-1'
+      end
+
+      it 'raises a ParseError if multiple post-release segments' do
+        expect{ described_class.parse("1+1+1") }.to raise_error(ParseError)
       end
 
       it 'raises an ArgumentError for the empty string' do
-        expect{described_class.parse('')}.to raise_error(ArgumentError)
+        expect{ described_class.parse('') }.to raise_error(ArgumentError)
       end
     end
 

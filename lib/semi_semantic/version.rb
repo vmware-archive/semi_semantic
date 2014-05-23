@@ -1,3 +1,4 @@
+require 'semi_semantic/parse_error'
 require 'semi_semantic/version_segment'
 
 module SemiSemantic
@@ -9,9 +10,14 @@ module SemiSemantic
 
     attr_reader :release, :pre_release, :post_release, :segments
 
+    # Parses a semi-semantic version string into up to three segments
+    # Raises a ParseError if the string format is invalid
+    # Raises an ArgumentError if version_string is nil
     def self.parse(version_string)
-      matches = /^(?<release>[^-+]+)(\-(?<pre_release>[^-+]+))?(\+(?<post_release>[^-+]+))?$/.match(version_string)
-      raise ArgumentError.new "Invalid Version Format: #{version_string}" if matches.nil?
+      raise ArgumentError.new 'Invalid Version String: nil' if version_string.nil?
+      raise ArgumentError.new "Invalid Version String: '#{version_string}'" if version_string == ''
+      matches = /^(?<release>[0-9A-Za-z\.]+)(\-(?<pre_release>[0-9A-Za-z\-\.]+))?(\+(?<post_release>[0-9A-Za-z\-\.]+))?$/.match(version_string)
+      raise ParseError.new "Invalid Version Format: '#{version_string}'" if matches.nil?
 
       release = VersionSegment.parse matches[:release]
       pre_release = nil

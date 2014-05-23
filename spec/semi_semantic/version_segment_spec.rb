@@ -19,11 +19,11 @@ module SemiSemantic
         expect(described_class.parse('0.-1').components).to eq [0,'-1']
       end
 
-      it 'handles non-numerical components as strings' do
+      it 'handles alphanumerics and hyphens in components as strings' do
         expect(described_class.parse('a').components).to eq ['a']
         expect(described_class.parse('a.b.c').components).to eq ['a','b','c']
-        expect(described_class.parse('1-1+1').components).to eq ['1-1+1']
-        expect(described_class.parse('-.&').components).to eq ['-','&']
+        expect(described_class.parse('1-1').components).to eq ['1-1']
+        expect(described_class.parse('alpha-12.5.-').components).to eq ['alpha-12',5,'-']
         expect(described_class.parse('1.2.3.alpha').components).to eq [1,2,3,'alpha']
       end
 
@@ -31,9 +31,14 @@ module SemiSemantic
         expect{described_class.parse('')}.to raise_error(ArgumentError)
       end
 
-      it 'raises an ArgumentError for non-ASCII characters' do
-        expect{described_class.parse("\u{6666}")}.to raise_error(ArgumentError)
-        expect{described_class.parse("1.\u{6666}")}.to raise_error(ArgumentError)
+      it 'raises an ParseError for non-ASCII characters' do
+        expect{described_class.parse("\u{6666}")}.to raise_error(ParseError)
+        expect{described_class.parse("1.\u{6666}")}.to raise_error(ParseError)
+      end
+
+      it 'raises an ParseError for non-alphanumeric, non-hyphen characters' do
+        expect{described_class.parse('+')}.to raise_error(ParseError)
+        expect{described_class.parse('&')}.to raise_error(ParseError)
       end
     end
 

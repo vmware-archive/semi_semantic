@@ -1,3 +1,5 @@
+require 'semi_semantic/parse_error'
+
 module SemiSemantic
   class VersionSegment
     include Comparable
@@ -5,23 +7,26 @@ module SemiSemantic
     #TODO: immutable?
     attr_reader :components
 
-    # Converts a string into a VersionCluster, if possible, otherwise raises an ArgumentError
+    # Converts a string into a VersionCluster
+    # Raises a ParseError if the string format is invalid
+    # Raises an ArgumentError if version_string is nil
     def self.parse(component_string)
+      raise ArgumentError.new 'Invalid Version Component String: nil' if component_string.nil?
       self.new(component_string.split('.').map do |v|
-        if v.match(/^\d+$/)
+        if v.match(/\A[0-9]+\z/)
           v.to_i
-        elsif v.ascii_only?
+        elsif v.match(/\A[0-9A-Za-z\-]+\z/)
           v
         else
-          raise ArgumentError.new 'Invalid Component: Non-Numeric, Non-ASCII'
+          raise ParseError.new 'Invalid Version Component Format: Requires alphanumerics and hyphens only'
         end
       end)
     end
 
     # Construction can throw ArgumentError, but does no parsing or type-conversion
     def initialize(components)
-      raise ArgumentError.new 'Invalid Components: Empty' if components.empty?
-      raise ArgumentError.new 'Invalid Component: Empty String' if components.include? ''
+      raise ArgumentError.new 'Invalid Version Components: nil' if components.nil?
+      raise ArgumentError.new "Invalid Version Components: #{components}" if components.empty? || components.include?('')
       @components = components
     end
 
