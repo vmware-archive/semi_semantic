@@ -1,3 +1,5 @@
+require 'semi_semantic/version_segment'
+
 module SemiSemantic
   class Version
     include Comparable

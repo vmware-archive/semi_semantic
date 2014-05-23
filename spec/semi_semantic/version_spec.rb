@@ -1,6 +1,5 @@
 require 'spec_helper'
 require 'semi_semantic/version'
-require 'semi_semantic/version_segment'
 
 module SemiSemantic
   describe Version do
