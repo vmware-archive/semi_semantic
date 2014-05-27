@@ -15,7 +15,7 @@ module SemiSemantic
       self.new(component_string.split('.').map do |v|
         if v.match(/\A[0-9]+\z/)
           v.to_i
-        elsif v.match(/\A[0-9A-Za-z\-]+\z/)
+        elsif v.match(/\A[0-9A-Za-z_\-]+\z/)
           v
         else
           raise ParseError.new 'Invalid Version Component Format: Requires alphanumerics and hyphens only'

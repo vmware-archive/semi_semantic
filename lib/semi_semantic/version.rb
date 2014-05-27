@@ -16,7 +16,7 @@ module SemiSemantic
     def self.parse(version_string)
       raise ArgumentError.new 'Invalid Version String: nil' if version_string.nil?
       raise ArgumentError.new "Invalid Version String: '#{version_string}'" if version_string == ''
-      matches = /^(?<release>[0-9A-Za-z\.]+)(\-(?<pre_release>[0-9A-Za-z\-\.]+))?(\+(?<post_release>[0-9A-Za-z\-\.]+))?$/.match(version_string)
+      matches = /^(?<release>[0-9A-Za-z_\.]+)(\-(?<pre_release>[0-9A-Za-z_\-\.]+))?(\+(?<post_release>[0-9A-Za-z_\-\.]+))?$/.match(version_string)
       raise ParseError.new "Invalid Version Format: '#{version_string}'" if matches.nil?
 
       release = VersionSegment.parse matches[:release]

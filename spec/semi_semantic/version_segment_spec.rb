@@ -19,26 +19,25 @@ module SemiSemantic
         expect(described_class.parse('0.-1').components).to eq [0,'-1']
       end
 
-      it 'handles alphanumerics and hyphens in components as strings' do
+      it 'handles alphanumerics, hyphens & underscores in components as strings' do
         expect(described_class.parse('a').components).to eq ['a']
         expect(described_class.parse('a.b.c').components).to eq ['a','b','c']
         expect(described_class.parse('1-1').components).to eq ['1-1']
         expect(described_class.parse('alpha-12.5.-').components).to eq ['alpha-12',5,'-']
         expect(described_class.parse('1.2.3.alpha').components).to eq [1,2,3,'alpha']
+        expect(described_class.parse('2013-03-21_01-53-17').components).to eq ['2013-03-21_01-53-17']
       end
 
       it 'raises an ArgumentError for the empty string' do
         expect{described_class.parse('')}.to raise_error(ArgumentError)
       end
 
-      it 'raises an ParseError for non-ASCII characters' do
-        expect{described_class.parse("\u{6666}")}.to raise_error(ParseError)
-        expect{described_class.parse("1.\u{6666}")}.to raise_error(ParseError)
-      end
-
-      it 'raises an ParseError for non-alphanumeric, non-hyphen characters' do
+      it 'raises an ParseError for non-alphanumeric, non-hyphen, non-underscore characters' do
         expect{described_class.parse('+')}.to raise_error(ParseError)
         expect{described_class.parse('&')}.to raise_error(ParseError)
+        expect{described_class.parse(' ')}.to raise_error(ParseError)
+        expect{described_class.parse("\u{6666}")}.to raise_error(ParseError)
+        expect{described_class.parse("1.\u{6666}")}.to raise_error(ParseError)
       end
     end
 
@@ -132,6 +131,8 @@ module SemiSemantic
 
         expect(described_class.new(['a'])).to be < described_class.new(['a',1])
         expect(described_class.new(['123ab'])).to be < described_class.new(['123abc'])
+
+        expect(described_class.new(['2013-03-21_01-53-17'])).to be < described_class.new(['2013-03-21_12-00-00'])
       end
     end
 

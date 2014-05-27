@@ -50,28 +50,43 @@ module SemiSemantic
       end
 
       it 'supports hyphenation in pre/post-release segments' do
-        v = described_class.parse("1-1-1")
+        v = described_class.parse('1-1-1')
         expect(v.release).to eq VersionSegment.parse '1'
         expect(v.pre_release).to eq VersionSegment.parse '1-1'
         expect(v.post_release).to be_nil
 
-        v = described_class.parse("1+1-1")
+        v = described_class.parse('1+1-1')
         expect(v.release).to eq VersionSegment.parse '1'
         expect(v.pre_release).to be_nil
         expect(v.post_release).to eq VersionSegment.parse '1-1'
 
-        v = described_class.parse("1-1-1+1-1")
+        v = described_class.parse('1-1-1+1-1')
         expect(v.release).to eq VersionSegment.parse '1'
         expect(v.pre_release).to eq VersionSegment.parse '1-1'
         expect(v.post_release).to eq VersionSegment.parse '1-1'
       end
 
+      it 'raises a ParseError for empty segments' do
+        expect{ described_class.parse('+1') }.to raise_error(ParseError)
+        expect{ described_class.parse('1+') }.to raise_error(ParseError)
+        expect{ described_class.parse('-1') }.to raise_error(ParseError)
+        expect{ described_class.parse('1-') }.to raise_error(ParseError)
+        expect{ described_class.parse('1-+1') }.to raise_error(ParseError)
+        expect{ described_class.parse('1-1+') }.to raise_error(ParseError)
+      end
+
       it 'raises a ParseError if multiple post-release segments' do
-        expect{ described_class.parse("1+1+1") }.to raise_error(ParseError)
+        expect{ described_class.parse('1+1+1') }.to raise_error(ParseError)
       end
 
       it 'raises an ArgumentError for the empty string' do
         expect{ described_class.parse('') }.to raise_error(ArgumentError)
+      end
+
+      it 'raises a ParseError for invalid characters' do
+        expect{ described_class.parse(' ') }.to raise_error(ParseError)
+        expect{ described_class.parse('1 1') }.to raise_error(ParseError)
+        expect{ described_class.parse('can\'t do it cap\'n') }.to raise_error(ParseError)
       end
     end
 
