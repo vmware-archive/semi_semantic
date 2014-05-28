@@ -56,6 +56,15 @@ module SemiSemantic
 
       copy = Array.new @components
       copy[index] = value + 1
+
+      while index < copy.size && index != -1
+        index += 1
+        value = copy[index]
+        if value.is_a? Integer
+          copy[index] = 0
+        end
+      end
+
       self.class.new copy
     end
 

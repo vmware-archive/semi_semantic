@@ -78,6 +78,14 @@ module SemiSemantic
         expect{described_class.new([1,1,1,'a']).increment}.to raise_error(TypeError)
         expect{described_class.new([0,'-1']).increment}.to raise_error(TypeError)
       end
+
+      it 'resets to 0 all numeric components after the given index' do
+        expect(described_class.new([1,1,1]).increment(0).components).to eq [2,0,0]
+        expect(described_class.new([1,1,1,'alpha',5]).increment(0).components).to eq [2,0,0,'alpha',0]
+        expect(described_class.new([1,1,1]).increment(1).components).to eq [1,2,0]
+        expect(described_class.new([1,1,1]).increment(-1).components).to eq [1,1,2]
+        expect(described_class.new([1,1,1]).increment(-2).components).to eq [1,2,0]
+      end
     end
 
     describe 'decrement' do
