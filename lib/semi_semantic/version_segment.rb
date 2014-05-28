@@ -26,7 +26,15 @@ module SemiSemantic
     # Construction can throw ArgumentError, but does no parsing or type-conversion
     def initialize(components)
       raise ArgumentError.new 'Invalid Version Components: nil' if components.nil?
-      raise ArgumentError.new "Invalid Version Components: #{components}" if components.empty? || components.include?('')
+      raise ArgumentError.new 'Invalid Version Components: Empty Array' if components.empty?
+      components.each do |component|
+        unless component.is_a?(String) || component.is_a?(Integer)
+          raise ArgumentError.new "Invalid Version Component Type: #{component.class}"
+        end
+        if component == ''
+          raise ArgumentError.new 'Invalid Version Component: Empty String'
+        end
+      end
       @components = components
     end
 
@@ -34,17 +42,17 @@ module SemiSemantic
       a = @components
       b = other.components
       if a.size > b.size
-        comparison = a[0...b.size] <=> b
+        comparison = compare_arrays(a[0...b.size], b)
         return comparison unless comparison == 0
-        a[b.size..-1].each {|v| return 1 unless v == 0 }
+        return 1 unless is_all_zeros?(a[b.size..-1])
         0
       elsif a.size < b.size
-        comparison = a <=> b[0...a.size]
+        comparison = compare_arrays(a, b[0...a.size])
         return comparison unless comparison == 0
-        b[a.size..-1].each {|v| return -1 unless v == 0 }
+        return -1 unless is_all_zeros?(b[a.size..-1])
         0
       else
-        a <=> b
+        compare_arrays(a, b)
       end
     end
 
@@ -83,6 +91,28 @@ module SemiSemantic
 
     def to_s
       @components.join('.')
+    end
+
+    private
+    # a & b must have the same length
+    def compare_arrays(a, b)
+      a.each_with_index do |v1, i|
+        v2 = b[i]
+        if v1.is_a?(String) && v2.is_a?(Integer)
+          return 1
+        elsif v1.is_a?(Integer) && v2.is_a?(String)
+          return -1
+        end
+        comparison = v1 <=> v2
+        unless comparison == 0
+          return comparison
+        end
+      end
+      0
+    end
+
+    def is_all_zeros?(array)
+      array.all? { |e| e == 0 }
     end
   end
 end

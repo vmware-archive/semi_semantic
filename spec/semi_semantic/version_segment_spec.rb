@@ -55,6 +55,12 @@ module SemiSemantic
         expect{described_class.new([''])}.to raise_error(ArgumentError)
         expect{described_class.new([0,''])}.to raise_error(ArgumentError)
       end
+
+      it 'raises an ArgumentError for non-string & non-integer components' do
+        expect{described_class.new([1.1])}.to raise_error(ArgumentError)
+        expect{described_class.new([true])}.to raise_error(ArgumentError)
+        expect{described_class.new([[]])}.to raise_error(ArgumentError)
+      end
     end
 
     describe 'to string' do
@@ -141,6 +147,11 @@ module SemiSemantic
         expect(described_class.new(['123ab'])).to be < described_class.new(['123abc'])
 
         expect(described_class.new(['2013-03-21_01-53-17'])).to be < described_class.new(['2013-03-21_12-00-00'])
+      end
+
+      it 'values numbers lower than non-numbers' do
+        expect(described_class.new([1])).to be < described_class.new(['a'])
+        expect(described_class.new([1, 'a'])).to be > described_class.new([1, 0])
       end
     end
 
