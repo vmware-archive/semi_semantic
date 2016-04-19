@@ -1,6 +1,6 @@
 # coding: utf-8
 
-version = '1.1.0'
+version = '1.2.0'
 
 Gem::Specification.new do |s|
   s.name        = 'semi_semantic'
