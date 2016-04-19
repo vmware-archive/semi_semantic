@@ -36,9 +36,9 @@ module SemiSemantic
         segment_a = VersionSegment.parse '1.0.a'
         segment_b = VersionSegment.parse '1.0.b'
         segment_c = VersionSegment.parse '1.0.c'
-        expect(described_class.parse('1.0.a-1.0.b+1.0.c').segments).to eq [segment_a,segment_b,segment_c]
-        expect(described_class.parse('1.0.a-1.0.b').segments).to eq [segment_a,segment_b]
-        expect(described_class.parse('1.0.a+1.0.c').segments).to eq [segment_a,segment_c]
+        expect(described_class.parse('1.0.a-1.0.b+1.0.c').segments).to eq [segment_a, segment_b, segment_c]
+        expect(described_class.parse('1.0.a-1.0.b').segments).to eq [segment_a, segment_b]
+        expect(described_class.parse('1.0.a+1.0.c').segments).to eq [segment_a, segment_c]
         expect(described_class.parse('1.0.a').segments).to eq [segment_a]
       end
 
@@ -46,7 +46,7 @@ module SemiSemantic
         version_segment = class_double('SemiSemantic::VersionSegment').as_stubbed_const
         allow(version_segment).to receive(:parse).and_raise(ParseError)
 
-        expect{described_class.parse('1.0')}.to raise_error(ParseError)
+        expect { described_class.parse('1.0') }.to raise_error(ParseError)
       end
 
       it 'supports hyphenation in pre/post-release segments' do
@@ -67,26 +67,26 @@ module SemiSemantic
       end
 
       it 'raises a ParseError for empty segments' do
-        expect{ described_class.parse('+1') }.to raise_error(ParseError)
-        expect{ described_class.parse('1+') }.to raise_error(ParseError)
-        expect{ described_class.parse('-1') }.to raise_error(ParseError)
-        expect{ described_class.parse('1-') }.to raise_error(ParseError)
-        expect{ described_class.parse('1-+1') }.to raise_error(ParseError)
-        expect{ described_class.parse('1-1+') }.to raise_error(ParseError)
+        expect { described_class.parse('+1') }.to raise_error(ParseError)
+        expect { described_class.parse('1+') }.to raise_error(ParseError)
+        expect { described_class.parse('-1') }.to raise_error(ParseError)
+        expect { described_class.parse('1-') }.to raise_error(ParseError)
+        expect { described_class.parse('1-+1') }.to raise_error(ParseError)
+        expect { described_class.parse('1-1+') }.to raise_error(ParseError)
       end
 
       it 'raises a ParseError if multiple post-release segments' do
-        expect{ described_class.parse('1+1+1') }.to raise_error(ParseError)
+        expect { described_class.parse('1+1+1') }.to raise_error(ParseError)
       end
 
       it 'raises an ArgumentError for the empty string' do
-        expect{ described_class.parse('') }.to raise_error(ArgumentError)
+        expect { described_class.parse('') }.to raise_error(ArgumentError)
       end
 
       it 'raises a ParseError for invalid characters' do
-        expect{ described_class.parse(' ') }.to raise_error(ParseError)
-        expect{ described_class.parse('1 1') }.to raise_error(ParseError)
-        expect{ described_class.parse('can\'t do it cap\'n') }.to raise_error(ParseError)
+        expect { described_class.parse(' ') }.to raise_error(ParseError)
+        expect { described_class.parse('1 1') }.to raise_error(ParseError)
+        expect { described_class.parse('can\'t do it cap\'n') }.to raise_error(ParseError)
       end
     end
 
