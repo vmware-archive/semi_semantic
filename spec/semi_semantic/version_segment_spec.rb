@@ -116,6 +116,11 @@ module SemiSemantic
     end
 
     describe 'compare' do
+
+      it 'does not raise an error when comparing against nil' do
+        expect { described_class.parse('1.0.1') == nil }.to_not raise_exception
+      end
+
       it 'assumes appended zeros' do
         expect(described_class.new([0])).to eq described_class.new([0,0])
         expect(described_class.new([1,0])).to eq described_class.new([1,0,0,0])

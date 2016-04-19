@@ -39,6 +39,7 @@ module SemiSemantic
     end
 
     def <=>(other)
+      return nil if other.nil?
       a = @components
       b = other.components
       if a.size > b.size
