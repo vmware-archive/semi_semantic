@@ -1,6 +1,8 @@
 semi-semantic
 =============
 
+[![Build Status](https://travis-ci.org/pivotal-cf-experimental/semi_semantic.svg?branch=master)](https://travis-ci.org/pivotal-cf-experimental/semi_semantic)
+
 A Ruby library for parsing/formatting/comparing semi-semantic versions.
 
 ### Why not just use Semantic Versioning?
